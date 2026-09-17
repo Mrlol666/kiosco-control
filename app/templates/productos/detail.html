@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.descripcion }} — Kiosco Control{% endblock %}
+
+{% block content %}
+<p class="back-link">
+    <a href="{{ url_for('productos.listado') }}">Volver al listado</a>
+</p>
+
+<section class="panel">
+    <h1>{{ producto.descripcion }}</h1>
+    <p class="muted">ID {{ producto.producto_id }}{% if producto.activo == 0 %} · Inactivo{% endif %}</p>
+
+    <div class="actions">
+        <a class="button" href="{{ url_for('productos.editar', producto_id=producto.producto_id) }}">Editar producto</a>
+        {% if producto.activo == 1 %}
+        <form method="post" action="{{ url_for('productos.desactivar', producto_id=producto.producto_id) }}">
+            {{ accion_form.hidden_tag() }}
+            <button type="submit" class="button button-secondary">Desactivar producto</button>
+        </form>
+        {% else %}
+        <form method="post" action="{{ url_for('productos.reactivar', producto_id=producto.producto_id) }}">
+            {{ accion_form.hidden_tag() }}
+            <button type="submit" class="button">Reactivar producto</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <h2>Datos del producto</h2>
+    <dl class="kv">
+        <dt>{% if producto.codigo_interno %}Código interno{% else %}Código / EAN{% endif %}</dt>
+        <dd>
+            <span class="ean">{{ producto.codigo_ean }}</span>
+            {% if producto.codigo_interno %}
+            <br>
+            <span class="muted">Código interno generado por Kiosco Control. No corresponde a un EAN comercial.</span>
+            {% endif %}
+        </dd>
+        <dt>Descripción</dt>
+        <dd>{{ producto.descripcion }}</dd>
+        <dt>Marca</dt>
+        <dd>{{ producto.marca or "—" }}</dd>
+        <dt>Categoría</dt>
+        <dd>{{ producto.categoria or "—" }}</dd>
+        <dt>Forma de venta</dt>
+        <dd>{{ producto.tipo_venta_mostrar }}</dd>
+        <dt>Unidad de stock</dt>
+        <dd>{{ producto.unidad_stock_mostrar }}</dd>
+        <dt>Precio de venta</dt>
+        <dd>{{ producto.precio_venta_mostrar }}</dd>
+        <dt>Precio de compra</dt>
+        <dd>{{ producto.precio_compra_mostrar }}</dd>
+        <dt>Stock actual</dt>
+        <dd>{{ producto.stock_mostrar }}</dd>
+        <dt>Stock mínimo</dt>
+        <dd>{{ producto.stock_minimo_mostrar }}</dd>
+    </dl>
+    <p class="muted">El stock se administra desde Inventario.</p>
+</section>
+
+<section class="panel sepa">
+    <h2>Referencia SEPA</h2>
+    <p class="muted">
+        Estos valores son una referencia de mercado. La referencia mayorista no es necesariamente
+        el costo real pagado por el kiosco.
+    </p>
+    <dl class="kv">
+        <dt>Precio DIA sucursal 28</dt>
+        <dd>{{ producto.precio_dia_28_mostrar }}</dd>
+        <dt>Precio DIA sucursal 64</dt>
+        <dd>{{ producto.precio_dia_64_mostrar }}</dd>
+        <dt>Referencia mayorista</dt>
+        <dd>{{ producto.precio_compra_referencia_mostrar }}</dd>
+        <dt>Mayorista de referencia</dt>
+        <dd>{{ producto.mayorista_referencia }}</dd>
+        <dt>Alcance</dt>
+        <dd>{{ producto.alcance_precio_compra }}</dd>
+        <dt>Fecha minorista</dt>
+        <dd>{{ producto.fecha_minorista or "—" }}</dd>
+        <dt>Fecha mayorista</dt>
+        <dd>{{ producto.fecha_mayorista or "—" }}</dd>
+        <dt>Calidad del dato</dt>
+        <dd>
+            {{ producto.calidad_etiqueta }}
+            {% if producto.calidad_explicacion %}
+            <br>
+            <span class="muted">{{ producto.calidad_explicacion }}</span>
+            {% endif %}
+        </dd>
+    </dl>
+</section>
+{% endblock %}

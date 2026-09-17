@@ -7,6 +7,7 @@ import pytest
 
 from app import create_app
 from app.config import SEED_DB_PATH
+from tests.db_fixture import crear_base_de_prueba
 
 
 def _sha256(path: Path) -> str:
@@ -30,13 +31,14 @@ def hash_file():
 @pytest.fixture()
 def app(tmp_path, seed_sha256):
     db_path = tmp_path / "kiosco_test.sqlite"
-    db_path.touch()
+    crear_base_de_prueba(db_path)
     application = create_app(
         {
             "TESTING": True,
             "WTF_CSRF_ENABLED": False,
             "SECRET_KEY": "test-kiosco-control",
             "DATABASE_PATH": db_path,
+            "PAGE_SIZE": 2,
         }
     )
     yield application

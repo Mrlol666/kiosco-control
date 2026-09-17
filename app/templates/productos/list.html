@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Productos — Kiosco Control{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Productos</h1>
+
+    <p>
+        <a class="button" href="{{ url_for('productos.nuevo') }}">Nuevo producto</a>
+    </p>
+
+    <form class="filters" method="get" action="{{ url_for('productos.listado') }}">
+        <label>
+            Buscar
+            <input type="search" name="q" value="{{ q }}" placeholder="Descripción, marca o código" inputmode="search">
+        </label>
+        <label>
+            Forma de venta
+            <select name="tipo">
+                <option value="todos" {% if tipo == "todos" %}selected{% endif %}>Todos</option>
+                <option value="UNIDAD" {% if tipo == "UNIDAD" %}selected{% endif %}>Por unidad</option>
+                <option value="PESO" {% if tipo == "PESO" %}selected{% endif %}>Por peso</option>
+            </select>
+        </label>
+        <label>
+            Estado
+            <select name="estado">
+                <option value="activos" {% if estado == "activos" %}selected{% endif %}>Activos</option>
+                <option value="inactivos" {% if estado == "inactivos" %}selected{% endif %}>Inactivos</option>
+                <option value="todos" {% if estado == "todos" %}selected{% endif %}>Todos</option>
+            </select>
+        </label>
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <p class="muted">{{ total }} resultado{% if total != 1 %}s{% endif %}</p>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Tipo</th>
+                    <th>Precio venta</th>
+                    <th>Stock</th>
+                    <th>Calidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in items %}
+                <tr>
+                    <td>{{ producto.producto_id }}</td>
+                    <td class="ean">{{ producto.codigo_ean }}</td>
+                    <td>
+                        <a href="{{ url_for('productos.detalle', producto_id=producto.producto_id) }}">
+                            {{ producto.descripcion }}
+                        </a>
+                    </td>
+                    <td>{{ producto.marca or "—" }}</td>
+                    <td>{{ producto.tipo_venta_mostrar }}</td>
+                    <td>{{ producto.precio_venta_mostrar }}</td>
+                    <td>{{ producto.stock_mostrar }}</td>
+                    <td>{{ producto.calidad_etiqueta }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="muted">No hay productos para mostrar.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Paginación">
+        {% if page > 1 %}
+        <a href="{{ url_for('productos.listado', page=page-1, q=q, tipo=tipo, estado=estado) }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ page }} de {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('productos.listado', page=page+1, q=q, tipo=tipo, estado=estado) }}">Siguiente</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

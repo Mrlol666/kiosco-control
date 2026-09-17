@@ -5,12 +5,33 @@
 {% block content %}
 <section class="panel">
     <h1>Panel de control</h1>
-    <p>
-        Bienvenido a <strong>Kiosco Control</strong>.
-        Esta es la versión 0.1: infraestructura, conexión a SQLite y este tablero mínimo.
-    </p>
-    <p class="muted">
-        El catálogo de productos, las ventas y el stock se van a incorporar en pasos siguientes.
-    </p>
+    <p class="muted">Resumen del catálogo. Las ventas y el stock operacional se incorporan más adelante.</p>
+
+    <ul class="metrics">
+        <li>
+            <span class="metrics-value">{{ metricas.activos }}</span>
+            <span class="metrics-label">Productos activos</span>
+        </li>
+        <li>
+            <span class="metrics-value">{{ metricas.inactivos }}</span>
+            <span class="metrics-label">Productos inactivos</span>
+        </li>
+        <li>
+            <span class="metrics-value">{{ metricas.unidad }}</span>
+            <span class="metrics-label">Productos por unidad</span>
+        </li>
+        <li>
+            <span class="metrics-value">{{ metricas.peso }}</span>
+            <span class="metrics-label">Productos por peso</span>
+        </li>
+        <li>
+            <span class="metrics-value">{{ metricas.sin_stock }}</span>
+            <span class="metrics-label">Sin stock inicial</span>
+        </li>
+        <li>
+            <span class="metrics-value">{{ metricas.stock_bajo }}</span>
+            <span class="metrics-label">Con stock bajo</span>
+        </li>
+    </ul>
 </section>
 {% endblock %}

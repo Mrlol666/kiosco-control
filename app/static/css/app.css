@@ -58,6 +58,223 @@ body {
     color: #5c5c5c;
 }
 
+.site-nav {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.site-nav a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.25rem 0.15rem;
+}
+
+.site-nav a:hover {
+    text-decoration: underline;
+}
+
+.panel + .panel {
+    margin-top: 1rem;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.filters input,
+.filters select,
+.filters button {
+    font: inherit;
+    padding: 0.45rem 0.55rem;
+    min-height: 2.5rem;
+}
+
+.filters button {
+    background: #2c3d2f;
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.data-table th,
+.data-table td {
+    text-align: left;
+    padding: 0.5rem 0.45rem;
+    border-bottom: 1px solid #e4e0d7;
+    vertical-align: top;
+}
+
+.ean {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.metrics {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.metrics li {
+    background: #f7f4ee;
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.metrics-value {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.metrics-label {
+    color: #5c5c5c;
+    font-size: 0.9rem;
+}
+
+.kv {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.2rem 1rem;
+}
+
+.kv dt {
+    font-weight: 600;
+    margin-top: 0.7rem;
+}
+
+.kv dd {
+    margin: 0;
+}
+
+.back-link {
+    margin: 0 0 0.75rem;
+}
+
+.sepa {
+    border: 1px dashed #c8c1b3;
+}
+
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.flash {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.flash-ok {
+    background: #e6f4ea;
+    border: 1px solid #1f6b34;
+}
+
+.flash-error {
+    background: #fdecea;
+    border: 1px solid #8a1f1f;
+}
+
+.button {
+    display: inline-block;
+    background: #2c3d2f;
+    color: #fff;
+    text-decoration: none;
+    border: 0;
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    font: inherit;
+    min-height: 2.5rem;
+    cursor: pointer;
+}
+
+.button-secondary {
+    background: #6d6256;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.product-form {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.product-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.product-form input,
+.product-form select {
+    font: inherit;
+    padding: 0.45rem 0.55rem;
+    min-height: 2.5rem;
+}
+
+@media (min-width: 700px) {
+    .filters {
+        grid-template-columns: 2fr 1fr 1fr auto;
+        align-items: end;
+    }
+
+    .metrics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .kv {
+        grid-template-columns: 12rem 1fr;
+    }
+
+    .kv dt {
+        margin-top: 0.35rem;
+    }
+}
+
 @media (max-width: 600px) {
     html {
         font-size: 17px;
@@ -65,5 +282,9 @@ body {
 
     .panel {
         padding: 1rem;
+    }
+
+    .site-header .container {
+        flex-wrap: wrap;
     }
 }

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% if modo == "nuevo" %}
+    {% set titulo = "Nuevo producto" %}
+{% else %}
+    {% set titulo = "Editar producto" %}
+{% endif %}
+
+{% block title %}{{ titulo }} — Kiosco Control{% endblock %}
+
+{% block content %}
+<p class="back-link">
+    {% if modo == "editar" %}
+    <a href="{{ url_for('productos.detalle', producto_id=producto.producto_id) }}">Volver al detalle</a>
+    {% else %}
+    <a href="{{ url_for('productos.listado') }}">Volver al listado</a>
+    {% endif %}
+</p>
+
+<section class="panel">
+    <h1>{{ titulo }}</h1>
+    <p class="muted">Los campos marcados con * son obligatorios.</p>
+
+    <form method="post" class="product-form">
+        {{ form.hidden_tag() }}
+
+        {% if modo == "nuevo" %}
+        <label>
+            Código / EAN
+            {{ form.codigo_ean(inputmode="numeric", autocomplete="off") }}
+            <span class="muted">Opcional. 8, 12 o 13 dígitos. Si lo dejás vacío, se genera un código interno que no es un EAN comercial.</span>
+        </label>
+        {% else %}
+        <p>
+            <strong>{% if producto.codigo_interno %}Código interno{% else %}Código / EAN{% endif %}</strong><br>
+            <span class="ean">{{ producto.codigo_ean }}</span>
+        </p>
+        {% if producto.codigo_interno %}
+        <p class="muted">Código interno generado por Kiosco Control. No corresponde a un EAN comercial.</p>
+        {% endif %}
+        <p class="muted">El código no se puede modificar después de crear el producto.</p>
+        {% endif %}
+
+        <label>
+            Descripción *
+            {{ form.descripcion(required=false) }}
+        </label>
+        <label>
+            Marca
+            {{ form.marca() }}
+        </label>
+        <label>
+            Categoría
+            {{ form.categoria() }}
+        </label>
+        <label>
+            Forma de venta *
+            {{ form.tipo_venta() }}
+        </label>
+        <label>
+            Precio de venta *
+            {{ form.precio_venta_actual(inputmode="decimal") }}
+            <span class="muted">En productos vendidos por peso, el precio corresponde a 1 kilogramo.</span>
+        </label>
+        <label>
+            Precio de compra
+            {{ form.precio_compra_actual(inputmode="decimal") }}
+            <span class="muted">Opcional. Es el costo del kiosco, no la referencia mayorista SEPA.</span>
+        </label>
+
+        {% if modo == "editar" %}
+        <p>
+            <strong>Stock actual</strong><br>
+            {{ producto.stock_mostrar }}
+        </p>
+        <p class="muted">El stock se administra desde Inventario.</p>
+        {% endif %}
+
+        <label>
+            Stock mínimo
+            {{ form.stock_minimo(inputmode="decimal") }}
+            <span class="muted">Opcional. En productos por unidad son unidades. En productos por peso, ingresá el valor en gramos (1000 g = 1 kg).</span>
+        </label>
+
+        <button type="submit" class="button">{{ form.submit.label.text }}</button>
+    </form>
+</section>
+{% endblock %}

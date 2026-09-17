@@ -17,11 +17,14 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     app.config.from_object(Config)
     if config_overrides:
         app.config.update(config_overrides)
+    app.url_map.strict_slashes = False
 
     csrf.init_app(app)
     init_db(app)
 
     from app.routes.dashboard import bp as dashboard_bp
+    from app.routes.productos import bp as productos_bp
 
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(productos_bp)
     return app
