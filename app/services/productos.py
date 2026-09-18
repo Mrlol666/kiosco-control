@@ -137,6 +137,16 @@ def format_unidad_stock(unidad_stock: str | None) -> str:
     return unidad_stock or "—"
 
 
+def format_alcance(valor: str | None) -> str:
+    if valor is None or str(valor).strip() == "":
+        return "—"
+    if valor == "LOCAL":
+        return "Local"
+    if valor == "NACIONAL":
+        return "Nacional"
+    return str(valor)
+
+
 def presentar_calidad(valor: str | None) -> dict:
     if valor is None or str(valor).strip() == "":
         return {"etiqueta": "—", "explicacion": None}
@@ -234,7 +244,7 @@ def _presentar_detalle(fila: dict) -> dict:
         item.get("precio_compra_referencia"), tipo, vacio="—"
     )
     item["mayorista_referencia"] = _texto_sepa(item.get("mayorista_referencia"))
-    item["alcance_precio_compra"] = _texto_sepa(item.get("alcance_precio_compra"))
+    item["alcance_precio_compra"] = format_alcance(item.get("alcance_precio_compra"))
     return item
 
 

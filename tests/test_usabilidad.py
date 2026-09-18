@@ -228,6 +228,46 @@ def test_codigo_interno_muestra_aclaracion(client, app):
     assert "Código interno generado por Kiosco Control. No corresponde a un EAN comercial." in html
 
 
+def test_alcance_local_se_muestra_como_local(client, app):
+    html = client.get("/productos/2").get_data(as_text=True)
+    assert "Local" in html
+    assert "LOCAL" not in html
+    with app.app_context():
+        valor = get_db().execute(
+            "SELECT alcance_precio_compra FROM productos WHERE producto_id = 2"
+        ).fetchone()[0]
+    assert valor == "LOCAL"
+
+
+def test_alcance_nacional_se_muestra_como_nacional(client, app):
+    with app.app_context():
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO productos (
+                codigo_ean, descripcion, tipo_venta, unidad_stock,
+                precio_venta_actual, activo, alcance_precio_compra
+            ) VALUES (?, ?, 'UNIDAD', 'UNIDAD', 10, 1, ?)
+            """,
+            ("7798880000002", "PROD ALCANCE PAIS", "NACIONAL"),
+        )
+        db.commit()
+        producto_id = db.execute(
+            "SELECT producto_id FROM productos WHERE codigo_ean = ?",
+            ("7798880000002",),
+        ).fetchone()[0]
+
+    html = client.get(f"/productos/{producto_id}").get_data(as_text=True)
+    assert "Nacional" in html
+    assert "NACIONAL" not in html
+    with app.app_context():
+        valor = get_db().execute(
+            "SELECT alcance_precio_compra FROM productos WHERE producto_id = ?",
+            (producto_id,),
+        ).fetchone()[0]
+    assert valor == "NACIONAL"
+
+
 def test_presentar_calidad_desconocida_es_razonable():
     resultado = presentar_calidad("NUEVO_CODIGO_RARO")
     assert resultado["etiqueta"] != "NUEVO_CODIGO_RARO"
