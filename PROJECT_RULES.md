@@ -98,11 +98,12 @@ El stock actual solo podrá cambiar mediante:
 
 - stock inicial;
 - reposición;
-- ajuste;
+- ajuste por conteo;
+- descuento de stock;
 - venta;
 - anulación de venta.
 
-Estas operaciones se implementarán en versiones posteriores.
+Venta y anulación de venta se implementarán en versiones posteriores.
 
 ## Precios
 
@@ -213,7 +214,8 @@ En v0.2 solamente se implementan:
 
 - stock inicial;
 - reposición;
-- ajuste.
+- ajuste por conteo;
+- descuento de stock.
 
 VENTA y ANULACIÓN se implementarán en versiones posteriores.
 
@@ -261,44 +263,89 @@ stock actual = 20
 reposición = 10
 stock resultante = 30
 
-### Ajustes de stock
+### Ajuste por conteo
 
-Un ajuste se utiliza cuando el stock físico real es diferente al registrado.
+Un ajuste por conteo se utiliza cuando el stock físico real es diferente al registrado.
 
 El usuario debe ingresar el STOCK REAL contado, no la diferencia.
 
 Ejemplo:
 
 stock registrado = 20
-stock real = 17
+stock real = 18
 
 El sistema calcula:
 
-diferencia = -3
+diferencia = -2
 
 Debe guardar:
 
-stock_actual = 17
+stock_actual = 18
 
 y registrar:
 
 tipo = 'AJUSTE'
-cantidad = -3
+motivo = 'DIFERENCIA_INVENTARIO'
+cantidad = -2
 
-El ajuste puede aumentar o disminuir stock.
+El ajuste por conteo puede aumentar o disminuir stock.
+
+Ejemplo de aumento:
+
+stock registrado = 20
+stock real = 23
+diferencia = +3
+stock_actual = 23
+cantidad = +3
+
+Si el stock real coincide con el stock registrado, la operación se rechaza.
 
 Nunca permitir un stock real negativo.
 
-Motivos iniciales permitidos:
+En este formulario no se elige un motivo de pérdida. El motivo guardado es siempre DIFERENCIA_INVENTARIO.
 
-- DIFERENCIA_INVENTARIO
+Rotura, vencimiento, merma, consumo interno y otras salidas conocidas se registran con la operación de descuento.
+
+### Descuento de stock
+
+Un descuento registra una cantidad conocida que sale del inventario y no es una venta.
+
+El usuario ingresa la cantidad a descontar. Esa cantidad debe ser mayor que cero.
+
+El resultado no puede ser negativo:
+
+cantidad a descontar <= stock actual
+
+Ejemplo:
+
+stock actual = 20
+descontar = 2
+stock resultante = 18
+
+Debe guardar:
+
+tipo = 'AJUSTE'
+cantidad = -2
+
+La cantidad del movimiento se guarda en negativo. El usuario no ingresa el signo.
+
+Descontar hasta dejar el stock en cero es válido.
+
+Motivos permitidos:
+
 - ROTURA
 - VENCIMIENTO
 - MERMA
 - CONSUMO_INTERNO
 - OTRO
 
+DIFERENCIA_INVENTARIO no se usa en el descuento. Queda reservado al ajuste por conteo.
+
 La interfaz debe mostrar nombres amigables al usuario.
+
+Requiere que el stock ya esté inicializado.
+
+Un producto inactivo con stock inicializado puede descontar y también puede ajustar por conteo. No puede registrar stock inicial ni reponer.
 
 ### Productos por UNIDAD
 
@@ -310,7 +357,7 @@ entonces:
 
 unidad_stock = 'UNIDAD'
 
-Stock inicial, reposición y ajuste deben usar cantidades enteras.
+Stock inicial, reposición, ajuste por conteo y descuento deben usar cantidades enteras.
 
 No aceptar:
 
@@ -403,6 +450,14 @@ Un producto con:
 stock_actual IS NULL
 
 no debe considerarse stock bajo; significa que todavía no se inicializó el inventario.
+
+Un producto con:
+
+stock_actual = 0
+
+ya tiene el inventario inicializado, pero no quedan existencias.
+En el listado se muestra como "Sin existencias".
+Si además tiene stock mínimo y el stock no lo supera, sigue entrando en el filtro de stock bajo.
 
 ### Seed
 

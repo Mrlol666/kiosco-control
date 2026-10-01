@@ -10,9 +10,12 @@
 
 {% block content %}
 <p class="back-link">
+    {% if next_retorno %}
+    <a href="{{ next_retorno }}">← Volver a resultados</a>
+    {% endif %}
     {% if modo == "editar" %}
-    <a href="{{ url_for('productos.detalle', producto_id=producto.producto_id) }}">Volver al detalle</a>
-    {% else %}
+    <a href="{{ con_next('productos.detalle', producto_id=producto.producto_id) }}">Volver al detalle</a>
+    {% elif not next_retorno %}
     <a href="{{ url_for('productos.listado') }}">Volver al listado</a>
     {% endif %}
 </p>
@@ -23,6 +26,7 @@
 
     <form method="post" class="product-form">
         {{ form.hidden_tag() }}
+        {% include "partials/next_hidden.html" %}
 
         {% if modo == "nuevo" %}
         <label>

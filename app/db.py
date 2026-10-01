@@ -75,3 +75,17 @@ def close_db(exception: BaseException | None = None) -> None:
 
 def init_app(app) -> None:
     app.teardown_appcontext(close_db)
+
+
+def begin_immediate() -> None:
+    get_db().execute("BEGIN IMMEDIATE")
+
+
+def commit_transaccion() -> None:
+    get_db().commit()
+
+
+def rollback_transaccion() -> None:
+    conexion = get_db()
+    if conexion.in_transaction:
+        conexion.rollback()

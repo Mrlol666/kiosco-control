@@ -34,6 +34,14 @@ def test_seed_is_not_modified(hash_file, seed_sha256):
     assert hash_file(SEED_DB_PATH) == seed_sha256
 
 
+SCHEMA_PATH = Path(__file__).resolve().parents[1] / "docs" / "schema_kiosco.sql"
+SCHEMA_SHA256 = "639d74766d6b98145f5b72abfdd95a3d2e3ab113d8f2ed7b096c6944e6eee3ce"
+
+
+def test_schema_is_not_modified(hash_file):
+    assert hash_file(SCHEMA_PATH) == SCHEMA_SHA256
+
+
 def test_get_db_rejects_seed_as_operational():
     application = create_app(
         {

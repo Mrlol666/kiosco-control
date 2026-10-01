@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo }} — Kiosco Control{% endblock %}
+
+{% block content %}
+{% set fallback_endpoint = "inventario.listado" %}
+{% set fallback_texto = "← Volver al inventario" %}
+{% set ver_producto = true %}
+{% set ver_movimientos = true %}
+{% include "partials/retorno.html" %}
+
+<section class="panel">
+    <h1>{{ titulo }}</h1>
+    <p>{{ producto.descripcion }}</p>
+    <p class="muted">
+        Forma de venta: {{ producto.tipo_venta_mostrar }}.
+        Stock actual: {{ producto.stock_mostrar }}.
+        {% if producto.activo != 1 %}Inactivo.{% endif %}
+    </p>
+    <p class="muted">Los campos marcados con * son obligatorios.</p>
+    <p class="muted">{{ nota }}</p>
+
+    <form method="post" class="product-form">
+        {{ form.hidden_tag() }}
+        {% include "partials/next_hidden.html" %}
+        <label>
+            Cantidad *
+            {{ form.cantidad(inputmode="decimal") }}
+        </label>
+        {% if producto.tipo_venta == "PESO" %}
+        <label>
+            Unidad *
+            {{ form.unidad_entrada() }}
+            <span class="muted">La cantidad se guarda en gramos. 1 kg = 1000 g. 1,5 kg = 1500 g.</span>
+        </label>
+        {% else %}
+        <p class="muted">Ingresá unidades enteras. Por ejemplo: 0, 1, 12 o 100.</p>
+        {% endif %}
+        <button type="submit" class="button">{{ form.submit.label.text }}</button>
+    </form>
+</section>
+{% endblock %}

@@ -10,6 +10,8 @@ from flask import (
 )
 
 from app.forms import AccionProductoForm, ProductoEditarForm, ProductoNuevoForm
+from app.navegacion import destino_o_fallback, url_actual, url_con_next
+from app.services import inventario as inventario_service
 from app.services import productos as productos_service
 from app.services.productos import ProductoError
 
@@ -36,6 +38,14 @@ def _mostrar_errores(error: ProductoError) -> None:
         flash(mensaje, "error")
 
 
+def _redirigir(endpoint: str, **valores):
+    return redirect(url_con_next(endpoint, **valores))
+
+
+def _redirigir_o_listado():
+    return redirect(destino_o_fallback(request.values.get("next"), url_for("productos.listado")))
+
+
 def _valor_formulario(valor) -> str:
     if valor is None:
         return ""
@@ -53,7 +63,7 @@ def listado():
         page=request.args.get("page"),
         page_size=current_app.config["PAGE_SIZE"],
     )
-    return render_template("productos/list.html", **resultado)
+    return render_template("productos/list.html", retorno=url_actual(), **resultado)
 
 
 @bp.route("/nuevo", methods=["GET", "POST"])
@@ -63,7 +73,7 @@ def nuevo():
         try:
             producto_id = productos_service.crear(_datos_form(form))
             flash("Producto agregado correctamente.", "ok")
-            return redirect(url_for("productos.detalle", producto_id=producto_id))
+            return _redirigir("productos.detalle", producto_id=producto_id)
         except ProductoError as error:
             _mostrar_errores(error)
     return render_template("productos/form.html", form=form, modo="nuevo", producto=None)
@@ -78,6 +88,10 @@ def detalle(producto_id: int):
         "productos/detail.html",
         producto=producto,
         accion_form=AccionProductoForm(),
+        permisos=inventario_service.permisos(
+            producto.get("stock_actual"),
+            producto.get("activo"),
+        ),
     )
 
 
@@ -101,7 +115,7 @@ def editar(producto_id: int):
         try:
             productos_service.editar(producto_id, _datos_form(form))
             flash("Producto actualizado correctamente.", "ok")
-            return redirect(url_for("productos.detalle", producto_id=producto_id))
+            return _redirigir("productos.detalle", producto_id=producto_id)
         except ProductoError as error:
             _mostrar_errores(error)
 
@@ -118,14 +132,14 @@ def desactivar(producto_id: int):
     form = AccionProductoForm()
     if not form.validate_on_submit():
         flash("No se pudo validar la acción.", "error")
-        return redirect(url_for("productos.detalle", producto_id=producto_id))
+        return _redirigir("productos.detalle", producto_id=producto_id)
     try:
         productos_service.desactivar(producto_id)
         flash("Producto desactivado.", "ok")
     except ProductoError as error:
         _mostrar_errores(error)
-        return redirect(url_for("productos.listado"))
-    return redirect(url_for("productos.detalle", producto_id=producto_id))
+        return _redirigir_o_listado()
+    return _redirigir("productos.detalle", producto_id=producto_id)
 
 
 @bp.post("/<int:producto_id>/reactivar")
@@ -133,11 +147,11 @@ def reactivar(producto_id: int):
     form = AccionProductoForm()
     if not form.validate_on_submit():
         flash("No se pudo validar la acción.", "error")
-        return redirect(url_for("productos.detalle", producto_id=producto_id))
+        return _redirigir("productos.detalle", producto_id=producto_id)
     try:
         productos_service.reactivar(producto_id)
         flash("Producto reactivado.", "ok")
     except ProductoError as error:
         _mostrar_errores(error)
-        return redirect(url_for("productos.listado"))
-    return redirect(url_for("productos.detalle", producto_id=producto_id))
+        return _redirigir_o_listado()
+    return _redirigir("productos.detalle", producto_id=producto_id)

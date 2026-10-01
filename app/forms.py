@@ -39,3 +39,59 @@ class ProductoEditarForm(FlaskForm):
 
 class AccionProductoForm(FlaskForm):
     submit = SubmitField("Confirmar")
+
+
+class StockInicialForm(FlaskForm):
+    cantidad = StringField("Cantidad")
+    unidad_entrada = SelectField(
+        "Unidad",
+        choices=[("G", "Gramos"), ("KG", "Kilogramos")],
+        default="G",
+        validate_choice=False,
+    )
+    submit = SubmitField("Registrar stock inicial")
+
+
+class ReposicionForm(FlaskForm):
+    cantidad = StringField("Cantidad")
+    unidad_entrada = SelectField(
+        "Unidad",
+        choices=[("G", "Gramos"), ("KG", "Kilogramos")],
+        default="G",
+        validate_choice=False,
+    )
+    submit = SubmitField("Registrar reposición")
+
+
+class AjusteForm(FlaskForm):
+    stock_real = StringField("Stock real contado")
+    unidad_entrada = SelectField(
+        "Unidad",
+        choices=[("G", "Gramos"), ("KG", "Kilogramos")],
+        default="G",
+        validate_choice=False,
+    )
+    submit = SubmitField("Guardar ajuste")
+
+
+class DescuentoForm(FlaskForm):
+    cantidad = StringField("Cantidad a descontar")
+    unidad_entrada = SelectField(
+        "Unidad",
+        choices=[("G", "Gramos"), ("KG", "Kilogramos")],
+        default="G",
+        validate_choice=False,
+    )
+    motivo = SelectField(
+        "Motivo",
+        choices=[
+            ("", "Elegí un motivo"),
+            ("ROTURA", "Rotura"),
+            ("VENCIMIENTO", "Vencimiento"),
+            ("MERMA", "Merma"),
+            ("CONSUMO_INTERNO", "Consumo interno"),
+            ("OTRO", "Otro"),
+        ],
+        validate_choice=False,
+    )
+    submit = SubmitField("Registrar descuento")

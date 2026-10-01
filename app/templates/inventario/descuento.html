@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Descontar stock — Kiosco Control{% endblock %}
+
+{% block content %}
+{% set fallback_endpoint = "inventario.listado" %}
+{% set fallback_texto = "← Volver al inventario" %}
+{% set ver_producto = true %}
+{% set ver_movimientos = true %}
+{% include "partials/retorno.html" %}
+
+<section class="panel">
+    <h1>Descontar stock</h1>
+    <p>{{ producto.descripcion }}</p>
+    <p class="muted">
+        Forma de venta: {{ producto.tipo_venta_mostrar }}.
+        Stock actual: {{ producto.stock_mostrar }}.
+        {% if producto.activo != 1 %}Inactivo.{% endif %}
+    </p>
+    <p class="muted">Los campos marcados con * son obligatorios.</p>
+    <p class="muted">Registrá una salida conocida que no es una venta: rotura, vencimiento, merma, consumo interno u otra salida.</p>
+    <p class="muted">Ingresá la cantidad que sale, no el stock que queda. El resultado no puede ser negativo.</p>
+    <p class="muted">
+        Si contaste el producto y el stock real no coincide,
+        <a href="{{ con_next('inventario.ajuste', producto_id=producto.producto_id) }}">ajustá por conteo</a>.
+    </p>
+
+    <form method="post" class="product-form">
+        {{ form.hidden_tag() }}
+        {% include "partials/next_hidden.html" %}
+        <label>
+            Cantidad a descontar *
+            {{ form.cantidad(inputmode="decimal") }}
+        </label>
+        {% if producto.tipo_venta == "PESO" %}
+        <label>
+            Unidad *
+            {{ form.unidad_entrada() }}
+            <span class="muted">La cantidad se guarda en gramos. 1 kg = 1000 g. 0,1 kg = 100 g.</span>
+        </label>
+        {% else %}
+        <p class="muted">Ingresá unidades enteras mayores que cero. Por ejemplo: 1, 2 o 12.</p>
+        {% endif %}
+        <label>
+            Motivo *
+            {{ form.motivo() }}
+        </label>
+        <button type="submit" class="button">Registrar descuento</button>
+    </form>
+</section>
+{% endblock %}

@@ -23,5 +23,7 @@ def test_dashboard_metricas_desde_sqlite(client):
         int(_valor_metrica(html, "Productos por unidad"))
         + int(_valor_metrica(html, "Productos por peso"))
     )
-    assert _valor_metrica(html, "Sin stock inicial") == "4"
+    assert _valor_metrica(html, "Sin stock inicial") == "3"
     assert _valor_metrica(html, "Con stock bajo") == "1"
+    assert "estado=sin_inicial" in html
+    assert "estado=bajo" in html

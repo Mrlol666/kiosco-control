@@ -7,7 +7,7 @@
     <h1>Productos</h1>
 
     <p>
-        <a class="button" href="{{ url_for('productos.nuevo') }}">Nuevo producto</a>
+        <a class="button" href="{{ url_for('productos.nuevo', next=retorno) }}">Nuevo producto</a>
     </p>
 
     <form class="filters" method="get" action="{{ url_for('productos.listado') }}">
@@ -56,7 +56,7 @@
                     <td>{{ producto.producto_id }}</td>
                     <td class="ean">{{ producto.codigo_ean }}</td>
                     <td>
-                        <a href="{{ url_for('productos.detalle', producto_id=producto.producto_id) }}">
+                        <a href="{{ url_for('productos.detalle', producto_id=producto.producto_id, next=retorno) }}">
                             {{ producto.descripcion }}
                         </a>
                     </td>

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Movimientos — {{ producto.descripcion }}{% endblock %}
+
+{% block content %}
+{% set fallback_endpoint = "inventario.listado" %}
+{% set fallback_texto = "← Volver al inventario" %}
+{% set ver_producto = true %}
+{% include "partials/retorno.html" %}
+
+<section class="panel">
+    <h1>{{ producto.descripcion }}</h1>
+    <p class="muted">
+        Código <span class="ean">{{ producto.codigo_ean }}</span>
+        · {{ producto.tipo_venta_mostrar }}
+        · {{ producto.activo_mostrar }}
+    </p>
+    <p>Stock actual: {{ producto.stock_mostrar }}</p>
+    <p class="muted">Estado de stock: {{ producto.estado_stock }}</p>
+
+    <div class="actions">
+        {% if producto.puede_inicial %}
+        <a class="button" href="{{ con_next('inventario.inicial', producto_id=producto.producto_id) }}">Registrar stock inicial</a>
+        {% endif %}
+        {% if producto.puede_reponer %}
+        <a class="button" href="{{ con_next('inventario.reposicion', producto_id=producto.producto_id) }}">Reponer stock</a>
+        {% endif %}
+        {% if producto.puede_ajustar %}
+        <a class="button" href="{{ con_next('inventario.ajuste', producto_id=producto.producto_id) }}">Ajustar stock</a>
+        {% endif %}
+        {% if producto.puede_descontar %}
+        <a class="button" href="{{ con_next('inventario.descuento', producto_id=producto.producto_id) }}">Descontar stock</a>
+        {% endif %}
+    </div>
+
+    <h2>Movimientos</h2>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Acción</th>
+                    <th>Cantidad</th>
+                    <th>Motivo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.fecha_hora }}</td>
+                    <td>{{ item.accion }}</td>
+                    <td>{{ item.cantidad_mostrar }}</td>
+                    <td>{{ item.motivo }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="muted">Este producto todavía no tiene movimientos.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Paginación de movimientos">
+        {% if page > 1 %}
+        <a href="{{ con_next('inventario.movimientos', producto_id=producto.producto_id, page=page-1) }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ page }} de {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ con_next('inventario.movimientos', producto_id=producto.producto_id, page=page+1) }}">Siguiente</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

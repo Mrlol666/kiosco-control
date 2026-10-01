@@ -3,24 +3,39 @@
 {% block title %}{{ producto.descripcion }} — Kiosco Control{% endblock %}
 
 {% block content %}
-<p class="back-link">
-    <a href="{{ url_for('productos.listado') }}">Volver al listado</a>
-</p>
+{% set fallback_endpoint = "productos.listado" %}
+{% set fallback_texto = "Volver al listado" %}
+{% include "partials/retorno.html" %}
 
 <section class="panel">
     <h1>{{ producto.descripcion }}</h1>
     <p class="muted">ID {{ producto.producto_id }}{% if producto.activo == 0 %} · Inactivo{% endif %}</p>
 
     <div class="actions">
-        <a class="button" href="{{ url_for('productos.editar', producto_id=producto.producto_id) }}">Editar producto</a>
+        <a class="button" href="{{ con_next('productos.editar', producto_id=producto.producto_id) }}">Editar producto</a>
+        {% if permisos.puede_inicial %}
+        <a class="button" href="{{ con_next('inventario.inicial', producto_id=producto.producto_id) }}">Registrar stock inicial</a>
+        {% endif %}
+        {% if permisos.puede_reponer %}
+        <a class="button" href="{{ con_next('inventario.reposicion', producto_id=producto.producto_id) }}">Reponer stock</a>
+        {% endif %}
+        {% if permisos.puede_ajustar %}
+        <a class="button" href="{{ con_next('inventario.ajuste', producto_id=producto.producto_id) }}">Ajustar stock</a>
+        {% endif %}
+        {% if permisos.puede_descontar %}
+        <a class="button" href="{{ con_next('inventario.descuento', producto_id=producto.producto_id) }}">Descontar stock</a>
+        {% endif %}
+        <a class="button button-secondary" href="{{ con_next('inventario.movimientos', producto_id=producto.producto_id) }}">Ver movimientos</a>
         {% if producto.activo == 1 %}
         <form method="post" action="{{ url_for('productos.desactivar', producto_id=producto.producto_id) }}">
             {{ accion_form.hidden_tag() }}
+            {% include "partials/next_hidden.html" %}
             <button type="submit" class="button button-secondary">Desactivar producto</button>
         </form>
         {% else %}
         <form method="post" action="{{ url_for('productos.reactivar', producto_id=producto.producto_id) }}">
             {{ accion_form.hidden_tag() }}
+            {% include "partials/next_hidden.html" %}
             <button type="submit" class="button">Reactivar producto</button>
         </form>
         {% endif %}

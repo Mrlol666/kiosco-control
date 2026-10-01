@@ -23,8 +23,14 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     init_db(app)
 
     from app.routes.dashboard import bp as dashboard_bp
+    from app.routes.inventario import bp as inventario_bp
     from app.routes.productos import bp as productos_bp
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(productos_bp)
+    app.register_blueprint(inventario_bp)
+
+    from app.navegacion import registrar_plantillas
+
+    registrar_plantillas(app)
     return app

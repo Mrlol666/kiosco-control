@@ -5,7 +5,7 @@
 {% block content %}
 <section class="panel">
     <h1>Panel de control</h1>
-    <p class="muted">Resumen del catálogo. Las ventas y el stock operacional se incorporan más adelante.</p>
+    <p class="muted">Resumen del catálogo y del inventario. Las ventas se incorporan más adelante.</p>
 
     <ul class="metrics">
         <li>
@@ -25,12 +25,16 @@
             <span class="metrics-label">Productos por peso</span>
         </li>
         <li>
-            <span class="metrics-value">{{ metricas.sin_stock }}</span>
-            <span class="metrics-label">Sin stock inicial</span>
+            <a href="{{ url_for('inventario.listado', estado='sin_inicial') }}">
+                <span class="metrics-value">{{ metricas.sin_stock }}</span>
+                <span class="metrics-label">Sin stock inicial</span>
+            </a>
         </li>
         <li>
-            <span class="metrics-value">{{ metricas.stock_bajo }}</span>
-            <span class="metrics-label">Con stock bajo</span>
+            <a href="{{ url_for('inventario.listado', estado='bajo') }}">
+                <span class="metrics-value">{{ metricas.stock_bajo }}</span>
+                <span class="metrics-label">Con stock bajo</span>
+            </a>
         </li>
     </ul>
 </section>

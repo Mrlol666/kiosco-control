@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Ajustar stock por conteo — Kiosco Control{% endblock %}
+
+{% block content %}
+{% set fallback_endpoint = "inventario.listado" %}
+{% set fallback_texto = "← Volver al inventario" %}
+{% set ver_producto = true %}
+{% set ver_movimientos = true %}
+{% include "partials/retorno.html" %}
+
+<section class="panel">
+    <h1>Ajustar stock por conteo</h1>
+    <p>{{ producto.descripcion }}</p>
+    <p class="muted">
+        Forma de venta: {{ producto.tipo_venta_mostrar }}.
+        Stock actual: {{ producto.stock_mostrar }}.
+        {% if producto.activo != 1 %}Inactivo.{% endif %}
+    </p>
+    <p class="muted">Los campos marcados con * son obligatorios.</p>
+    <p class="muted">Usá esta opción cuando contaste el producto y el stock real no coincide con el sistema.</p>
+    <p class="muted">Ingresá el stock real que contaste, no la diferencia.</p>
+    <p class="muted">
+        Si ya sabés la cantidad que sale del inventario,
+        <a href="{{ con_next('inventario.descuento', producto_id=producto.producto_id) }}">descontá stock</a>.
+    </p>
+
+    <form method="post" class="product-form">
+        {{ form.hidden_tag() }}
+        {% include "partials/next_hidden.html" %}
+        <label>
+            Stock real contado *
+            {{ form.stock_real(inputmode="decimal") }}
+        </label>
+        {% if producto.tipo_venta == "PESO" %}
+        <label>
+            Unidad *
+            {{ form.unidad_entrada() }}
+            <span class="muted">La cantidad se guarda en gramos. 1 kg = 1000 g. 1,5 kg = 1500 g.</span>
+        </label>
+        {% else %}
+        <p class="muted">Ingresá unidades enteras.</p>
+        {% endif %}
+        <button type="submit" class="button">Guardar ajuste</button>
+    </form>
+</section>
+{% endblock %}

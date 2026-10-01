@@ -141,7 +141,7 @@ def obtener_metricas() -> dict:
             SUM(CASE WHEN activo = 0 THEN 1 ELSE 0 END) AS inactivos,
             SUM(CASE WHEN activo = 1 AND tipo_venta = 'UNIDAD' THEN 1 ELSE 0 END) AS unidad,
             SUM(CASE WHEN activo = 1 AND tipo_venta = 'PESO' THEN 1 ELSE 0 END) AS peso,
-            SUM(CASE WHEN stock_actual IS NULL THEN 1 ELSE 0 END) AS sin_stock,
+            SUM(CASE WHEN activo = 1 AND stock_actual IS NULL THEN 1 ELSE 0 END) AS sin_stock,
             SUM(
                 CASE
                     WHEN activo = 1

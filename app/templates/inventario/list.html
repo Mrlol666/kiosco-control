@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Inventario — Kiosco Control{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h1>Inventario</h1>
+    <p class="muted">Stock inicial, reposiciones, ajustes por conteo y descuentos. Cada cambio queda registrado.</p>
+
+    <form class="filters filters-inventario" method="get" action="{{ url_for('inventario.listado') }}">
+        <label>
+            Buscar
+            <input type="search" name="q" value="{{ q }}" placeholder="Descripción, marca o código" inputmode="search">
+        </label>
+        <label>
+            Inventario
+            <select name="estado">
+                <option value="todos" {% if estado == "todos" %}selected{% endif %}>Todos</option>
+                <option value="sin_inicial" {% if estado == "sin_inicial" %}selected{% endif %}>Sin stock inicial</option>
+                <option value="sin_existencias" {% if estado == "sin_existencias" %}selected{% endif %}>Sin existencias</option>
+                <option value="con_existencias" {% if estado == "con_existencias" %}selected{% endif %}>Con existencias</option>
+                <option value="bajo" {% if estado == "bajo" %}selected{% endif %}>Stock bajo</option>
+            </select>
+        </label>
+        <label>
+            Estado del producto
+            <select name="activo">
+                <option value="activos" {% if activo == "activos" %}selected{% endif %}>Activos</option>
+                <option value="inactivos" {% if activo == "inactivos" %}selected{% endif %}>Inactivos</option>
+                <option value="todos" {% if activo == "todos" %}selected{% endif %}>Todos</option>
+            </select>
+        </label>
+        <label>
+            Forma de venta
+            <select name="tipo">
+                <option value="todos" {% if tipo == "todos" %}selected{% endif %}>Todas</option>
+                <option value="UNIDAD" {% if tipo == "UNIDAD" %}selected{% endif %}>Por unidad</option>
+                <option value="PESO" {% if tipo == "PESO" %}selected{% endif %}>Por peso</option>
+            </select>
+        </label>
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <p class="muted">{{ total }} resultado{% if total != 1 %}s{% endif %}</p>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Forma de venta</th>
+                    <th>Stock actual</th>
+                    <th>Stock mínimo</th>
+                    <th>Estado de stock</th>
+                    <th>Estado</th>
+                    <th>Acción rápida</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td class="ean">{{ item.codigo_ean }}</td>
+                    <td>
+                        <a class="product-link" href="{{ url_for('productos.detalle', producto_id=item.producto_id, next=retorno) }}">
+                            {{ item.descripcion }}
+                        </a>
+                    </td>
+                    <td>{{ item.tipo_venta_mostrar }}</td>
+                    <td>{{ item.stock_mostrar }}</td>
+                    <td>{{ item.stock_minimo_mostrar }}</td>
+                    <td>{{ item.estado_stock }}</td>
+                    <td>{{ item.activo_mostrar }}</td>
+                    <td>
+                        <div class="row-actions">
+                            {% if item.puede_inicial %}
+                            <a href="{{ url_for('inventario.inicial', producto_id=item.producto_id, next=retorno) }}">Registrar stock inicial</a>
+                            {% else %}
+                            <a href="{{ url_for('productos.detalle', producto_id=item.producto_id, next=retorno) }}">Gestionar</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="muted">No se encontraron productos con los filtros seleccionados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="pagination" aria-label="Paginación">
+        {% if page > 1 %}
+        <a href="{{ url_for('inventario.listado', page=page-1, q=q, estado=estado, activo=activo, tipo=tipo) }}">Anterior</a>
+        {% endif %}
+        <span>Página {{ page }} de {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="{{ url_for('inventario.listado', page=page+1, q=q, estado=estado, activo=activo, tipo=tipo) }}">Siguiente</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

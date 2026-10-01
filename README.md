@@ -16,6 +16,8 @@ La aplicación busca facilitar la administración de productos, inventario, vent
 
 ## Estado actual
 
+v0.2 — Inventario completada.
+
 ### v0.1 — completada
 
 Incluye:
@@ -43,29 +45,43 @@ La versión v0.1 está marcada en Git con:
 
 v0.1
 
-## Versión en desarrollo
+### v0.2 — Inventario completada
 
-### v0.2 — Inventario
+Incluye:
 
-Objetivos:
+- listado operativo de inventario;
+- búsqueda y filtros;
+- stock inicial;
+- reposiciones;
+- ajuste por conteo;
+- descuento de stock;
+- productos por unidad;
+- productos por peso en gramos/kg;
+- historial de movimientos;
+- conservación de filtros y de la navegación al volver a un listado;
+- distinción entre stock sin inicializar, sin existencias y stock bajo;
+- transacciones atómicas;
+- trazabilidad de cada cambio de stock.
 
-- registrar stock inicial;
-- reponer mercadería;
-- ajustar stock;
-- registrar todos los movimientos;
-- soportar unidades y productos por peso;
-- historial de inventario;
-- métricas de stock.
+## Productos e Inventario
 
-## Próximas versiones
+Productos administra el catálogo y los datos maestros: descripción, precios, forma de venta y stock mínimo.
 
+Inventario administra las existencias: stock inicial, reposiciones, ajustes por conteo, descuentos e historial.
+
+`stock_actual` no se edita directamente desde Productos. Solo cambia mediante una operación de inventario, y cada cambio queda registrado.
+
+## Roadmap
+
+- v0.1 — completada
+- v0.2 — completada
 - v0.3 — Carrito
-- v0.4 — Confirmación de ventas
+- v0.4 — Confirmación de ventas + descuento transaccional de stock
 - v0.5 — Ventas por peso
 - v0.6 — Historial y anulación
 - v0.7 — Gastos y medios de pago
-- v0.8 — Dashboard analítico y reportes PDF
-- v0.9 — estabilización y pruebas finales
+- v0.8 — Dashboard analítico y PDF
+- v0.9 — estabilización
 - v1.0 — versión final
 
 ## Base de datos
@@ -100,6 +116,6 @@ http://127.0.0.1:5000
 
 ## Tests
 
-Ejecutar:
+Desde la raíz del proyecto, con el entorno virtual activado:
 
 python -m pytest tests -v

@@ -1,0 +1,13 @@
+<p class="back-link">
+    {% if next_retorno %}
+    <a href="{{ next_retorno }}">← Volver a resultados</a>
+    {% else %}
+    <a href="{{ url_for(fallback_endpoint) }}">{{ fallback_texto }}</a>
+    {% endif %}
+    {% if ver_producto|default(false) and producto is defined and producto %}
+    <a href="{{ con_next('productos.detalle', producto_id=producto.producto_id) }}">Ver producto</a>
+    {% endif %}
+    {% if ver_movimientos|default(false) and producto is defined and producto %}
+    <a href="{{ con_next('inventario.movimientos', producto_id=producto.producto_id) }}">Ver movimientos</a>
+    {% endif %}
+</p>
