@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Venta — Kiosco Control{% endblock %}
+
+{% block content %}
+<section class="venta">
+    <h1>Venta</h1>
+
+    <div class="venta-tabs" role="tablist" aria-label="Venta">
+        <a role="tab" href="{{ url_for('venta.inicio', vista='actual', q=q, categoria=categoria) }}" {% if vista == 'actual' %}aria-current="page"{% endif %}>Carrito actual</a>
+        <a role="tab" href="{{ url_for('venta.inicio', vista='pendientes', q=q, categoria=categoria) }}" {% if vista == 'pendientes' %}aria-current="page"{% endif %}>Pendientes ({{ pendientes|length }})</a>
+    </div>
+
+    <div class="venta-paneles">
+        <section class="venta-panel {% if vista == 'actual' %}activa{% endif %}" aria-label="Carrito actual">
+            <h2 class="venta-encabezado">Carrito actual</h2>
+
+            <form class="venta-buscar" method="get" action="{{ url_for('venta.inicio') }}">
+                <input type="hidden" name="vista" value="actual">
+                <label>
+                    Buscar producto
+                    <input id="buscar-venta" type="search" name="q" value="{{ q }}" placeholder="Nombre del producto" inputmode="search" autocomplete="off">
+                </label>
+                <label>
+                    Categoría
+                    <select name="categoria">
+                        <option value="">Todas</option>
+                        {% for item in categorias %}
+                        <option value="{{ item }}" {% if categoria == item %}selected{% endif %}>{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <button type="submit" class="button">Buscar</button>
+            </form>
+
+            {% if carrito %}
+            <div class="venta-total">
+                <span>Total</span>
+                <strong>{{ carrito.total_mostrar }}</strong>
+            </div>
+            {% endif %}
+
+            {% if busqueda.q or busqueda.categoria %}
+            <div class="venta-resultados">
+                {% for item in busqueda.resultados %}
+                <article class="venta-resultado">
+                    <h3>{{ item.descripcion }}</h3>
+                    {% if item.marca %}<p class="muted">{{ item.marca }}</p>{% endif %}
+                    <p>{{ item.precio_mostrar }}</p>
+                    {% if item.puede_agregar %}
+                    <p>Disponible: {{ item.stock_actual }}</p>
+                    <form method="post" action="{{ url_for('venta.agregar', q=q, categoria=categoria, vista='actual') }}">
+                        {{ form_linea.hidden_tag() }}
+                        <input type="hidden" name="producto_id" value="{{ item.producto_id }}">
+                        <input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="button">Agregar</button>
+                    </form>
+                    {% else %}
+                    <p class="venta-aviso">{{ item.bloqueo }}</p>
+                    {% endif %}
+                </article>
+                {% else %}
+                <p class="muted">No se encontraron productos con esa búsqueda.</p>
+                {% endfor %}
+                {% if busqueda.recortado %}
+                <p class="muted">Hay más resultados. Escribí un poco más del nombre.</p>
+                {% endif %}
+            </div>
+            {% elif vista == 'actual' %}
+            <p class="muted">Escribí parte del nombre para buscar.</p>
+            {% endif %}
+
+            {% if carrito %}
+            {% if carrito.requiere_correccion %}
+            <p class="venta-aviso">Este carrito necesita corrección antes de seguir.</p>
+            {% endif %}
+
+            {% if confirmar == 'cancelar' and carrito.lineas %}
+            <section class="venta-confirmacion">
+                <h2>¿Cancelar esta venta?</h2>
+                <p>Se quitarán los productos del carrito. El stock no se modificará.</p>
+                <form method="post" action="{{ url_for('venta.cancelar', q=q, categoria=categoria, vista='actual') }}">
+                    {{ form_pendiente.hidden_tag() }}
+                    <input type="hidden" name="confirmar" value="1">
+                    <button type="submit" class="button button-danger">Cancelar venta</button>
+                </form>
+                <a class="button button-secondary" href="{{ url_for('venta.inicio', vista='actual', q=q, categoria=categoria) }}">Volver</a>
+            </section>
+            {% endif %}
+
+            <div class="venta-lineas">
+                {% for linea in carrito.lineas %}
+                <article class="venta-linea {% if linea.aviso_stock %}venta-linea-correccion{% endif %}">
+                    <h3>{{ linea.descripcion }}</h3>
+                    <p>Precio {{ linea.precio_mostrar }}</p>
+                    <p>Subtotal {{ linea.subtotal_mostrar }}</p>
+                    {% if linea.stock_actual is not none %}
+                    <p>Disponible: {{ linea.stock_actual }}</p>
+                    {% endif %}
+                    {% if linea.aviso_stock %}
+                    <p class="venta-aviso">{{ linea.aviso_stock }} Requiere corrección.</p>
+                    {% endif %}
+
+                    <div class="venta-cantidad">
+                        {% if linea.cantidad > 1 %}
+                        <form method="post" action="{{ url_for('venta.editar', producto_id=linea.producto_id, q=q, categoria=categoria, vista='actual') }}">
+                            {{ form_linea.hidden_tag() }}
+                            <input type="hidden" name="cantidad" value="{{ linea.cantidad - 1 }}">
+                            <button type="submit" aria-label="Disminuir cantidad">−</button>
+                        </form>
+                        {% endif %}
+                        <form method="post" action="{{ url_for('venta.editar', producto_id=linea.producto_id, q=q, categoria=categoria, vista='actual') }}" class="venta-cantidad-directa">
+                            {{ form_linea.hidden_tag() }}
+                            <label>
+                                Cantidad
+                                <input name="cantidad" value="{{ linea.cantidad }}" inputmode="numeric" autocomplete="off">
+                            </label>
+                            <button type="submit">Cambiar</button>
+                        </form>
+                        <form method="post" action="{{ url_for('venta.editar', producto_id=linea.producto_id, q=q, categoria=categoria, vista='actual') }}">
+                            {{ form_linea.hidden_tag() }}
+                            <input type="hidden" name="cantidad" value="{{ linea.cantidad + 1 }}">
+                            <button type="submit" aria-label="Aumentar cantidad">+</button>
+                        </form>
+                    </div>
+
+                    <div class="venta-linea-acciones">
+                        <form method="post" action="{{ url_for('venta.quitar', producto_id=linea.producto_id, q=q, categoria=categoria, vista='actual') }}">
+                            {{ form_linea.hidden_tag() }}
+                            <button type="submit" class="button button-secondary">Quitar</button>
+                        </form>
+                        {% if precio_id != linea.producto_id %}
+                        <a class="button button-secondary" href="{{ url_for('venta.inicio', vista='actual', q=q, categoria=categoria, precio=linea.producto_id) }}">Actualizar precio</a>
+                        {% endif %}
+                    </div>
+
+                    {% if precio_id == linea.producto_id %}
+                    <form class="venta-precio" method="post" action="{{ url_for('venta.precio', q=q, categoria=categoria, vista='actual') }}">
+                        {{ form_precio.hidden_tag() }}
+                        <input type="hidden" name="producto_id" value="{{ linea.producto_id }}">
+                        <p>Precio actual: {{ linea.precio_mostrar }}</p>
+                        <p class="muted">Este cambio actualizará el precio del producto.</p>
+                        <label>
+                            Nuevo precio
+                            <input id="nuevo-precio" name="precio" value="" inputmode="decimal" autocomplete="off">
+                        </label>
+                        <button type="submit" class="button">Guardar</button>
+                        <a class="button button-secondary" href="{{ url_for('venta.inicio', vista='actual', q=q, categoria=categoria) }}">Cancelar</a>
+                    </form>
+                    {% endif %}
+                </article>
+                {% else %}
+                <p class="muted">Todavía no agregaste productos.</p>
+                {% endfor %}
+            </div>
+
+            {% if carrito.lineas and confirmar != 'cancelar' %}
+            <div class="venta-acciones">
+                <form method="post" action="{{ url_for('venta.dejar_pendiente', vista='actual') }}">
+                    {{ form_pendiente.hidden_tag() }}
+                    <label>
+                        Nombre opcional
+                        <input name="etiqueta" placeholder="Juan, pedido, etc." autocomplete="off">
+                    </label>
+                    <button type="submit" class="button">Dejar pendiente</button>
+                </form>
+                <a class="button button-danger" href="{{ url_for('venta.inicio', vista='actual', q=q, categoria=categoria, confirmar='cancelar') }}">Cancelar venta</a>
+            </div>
+            {% endif %}
+            {% endif %}
+        </section>
+
+        <section class="venta-panel {% if vista == 'pendientes' %}activa{% endif %}" aria-label="Pendientes">
+            <h2 class="venta-encabezado">Pendientes ({{ pendientes|length }})</h2>
+
+            {% if confirmar == 'retomar' and pendiente_id and carrito and carrito.lineas %}
+            <section class="venta-confirmacion">
+                <h2>Ya hay una venta en curso.</h2>
+                <p>Podés dejarla pendiente y abrir la otra. No se pierde ninguna.</p>
+                <form method="post" action="{{ url_for('venta.retomar', carrito_id=pendiente_id, vista='actual') }}">
+                    {{ form_pendiente.hidden_tag() }}
+                    <input type="hidden" name="confirmar" value="1">
+                    <button type="submit" class="button">Dejarla pendiente y abrir esta</button>
+                </form>
+                <a class="button button-secondary" href="{{ url_for('venta.inicio', vista='pendientes', q=q, categoria=categoria) }}">Volver</a>
+            </section>
+            {% endif %}
+
+            {% if confirmar == 'descartar' and pendiente_id %}
+            <section class="venta-confirmacion">
+                <h2>¿Descartar este pendiente?</h2>
+                <p>Se elimina solo esa venta en espera. El stock no se modificará.</p>
+                <form method="post" action="{{ url_for('venta.descartar', carrito_id=pendiente_id, vista='pendientes') }}">
+                    {{ form_pendiente.hidden_tag() }}
+                    <input type="hidden" name="confirmar" value="1">
+                    <button type="submit" class="button button-danger">Descartar pendiente</button>
+                </form>
+                <a class="button button-secondary" href="{{ url_for('venta.inicio', vista='pendientes', q=q, categoria=categoria) }}">Volver</a>
+            </section>
+            {% endif %}
+
+            {% for item in pendientes %}
+            <article class="venta-pendiente {% if item.requiere_correccion %}venta-linea-correccion{% endif %}">
+                <h3>{{ item.titulo }}</h3>
+                <p>Hora {{ item.pendiente_en[11:16] if item.pendiente_en and item.pendiente_en|length >= 16 else item.pendiente_en }}</p>
+                <p class="venta-pendiente-total">Total {{ item.total_mostrar }}</p>
+                <ul>
+                    {% for nombre in item.resumen %}
+                    <li>{{ nombre }}</li>
+                    {% endfor %}
+                </ul>
+                {% if item.restantes == 1 %}
+                <p class="muted">+1 producto</p>
+                {% elif item.restantes > 1 %}
+                <p class="muted">+{{ item.restantes }} productos</p>
+                {% endif %}
+                {% if item.requiere_correccion %}
+                <p class="venta-aviso">Hay productos para corregir.</p>
+                {% endif %}
+                {% if not (confirmar == 'retomar' and pendiente_id == item.carrito_id and carrito and carrito.lineas) and not (confirmar == 'descartar' and pendiente_id == item.carrito_id) %}
+                <div class="venta-linea-acciones">
+                    {% if carrito and carrito.lineas %}
+                    <a class="button" href="{{ url_for('venta.inicio', vista='pendientes', confirmar='retomar', pendiente=item.carrito_id, q=q, categoria=categoria) }}">Retomar</a>
+                    {% else %}
+                    <form method="post" action="{{ url_for('venta.retomar', carrito_id=item.carrito_id, vista='actual') }}">
+                        {{ form_pendiente.hidden_tag() }}
+                        <button type="submit" class="button">Retomar</button>
+                    </form>
+                    {% endif %}
+                    <a class="button button-danger" href="{{ url_for('venta.inicio', vista='pendientes', confirmar='descartar', pendiente=item.carrito_id, q=q, categoria=categoria) }}">Descartar</a>
+                </div>
+                {% endif %}
+            </article>
+            {% else %}
+            <p class="muted">No hay ventas pendientes.</p>
+            {% endfor %}
+        </section>
+    </div>
+</section>
+<script>
+(function () {
+    var campo = document.getElementById("buscar-venta");
+    if (!campo || document.getElementById("nuevo-precio")) {
+        return;
+    }
+    if (!window.matchMedia("(min-width: 900px)").matches) {
+        return;
+    }
+    if (document.querySelector(".flash-error")) {
+        return;
+    }
+    campo.focus();
+})();
+</script>
+{% endblock %}

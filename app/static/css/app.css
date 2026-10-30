@@ -312,6 +312,214 @@ body {
     }
 }
 
+.venta-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin: 0.75rem 0 1rem;
+}
+
+.venta-tabs a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    border: 2px solid #d9d3c7;
+    text-align: center;
+}
+
+.venta-tabs a[aria-current="page"] {
+    border-color: #2c3d2f;
+    font-weight: 700;
+}
+
+.venta-panel {
+    display: none;
+}
+
+.venta-panel.activa {
+    display: block;
+}
+
+.venta-encabezado {
+    display: none;
+}
+
+.venta-buscar,
+.venta-precio,
+.venta-acciones form {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+}
+
+.venta-buscar label,
+.venta-precio label,
+.venta-acciones label,
+.venta-cantidad-directa label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.venta-buscar input,
+.venta-buscar select,
+.venta-precio input,
+.venta-acciones input,
+.venta-cantidad input {
+    font: inherit;
+    font-size: 1.05rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.6rem;
+    width: 100%;
+}
+
+.venta-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    padding: 0.85rem 1rem;
+    background: #2c3d2f;
+    color: #fff;
+    border-radius: 12px;
+}
+
+.venta-total strong {
+    font-size: 1.8rem;
+    line-height: 1.1;
+}
+
+.venta-resultado,
+.venta-linea,
+.venta-pendiente,
+.venta-confirmacion {
+    background: #fff;
+    border: 1px solid #e4e0d7;
+    border-radius: 12px;
+    padding: 0.9rem;
+    margin: 0.75rem 0;
+}
+
+.venta-resultado h3,
+.venta-linea h3,
+.venta-pendiente h3,
+.venta-confirmacion h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+}
+
+.venta-cantidad {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.45rem;
+    margin: 0.6rem 0;
+}
+
+.venta-cantidad button,
+.venta-linea-acciones .button,
+.venta-confirmacion .button,
+.venta-acciones .button,
+.venta-resultado .button,
+.venta-pendiente .button {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+}
+
+.venta-cantidad-directa {
+    display: flex;
+    align-items: end;
+    gap: 0.45rem;
+    flex: 1 1 8rem;
+}
+
+.venta-cantidad-directa input {
+    max-width: 5.5rem;
+}
+
+.venta-linea-acciones,
+.venta-confirmacion,
+.venta-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.venta-aviso {
+    margin: 0.4rem 0;
+    padding: 0.55rem 0.7rem;
+    border: 2px solid #8a5a12;
+    border-radius: 8px;
+    background: #fff8e8;
+}
+
+.venta-linea-correccion {
+    border-color: #8a5a12;
+}
+
+.button-danger {
+    background: #fff;
+    color: #8a1f1f;
+    border: 2px solid #8a1f1f;
+}
+
+.venta-pendiente ul {
+    margin: 0.35rem 0;
+    padding-left: 1.1rem;
+}
+
+.venta-pendiente-total {
+    font-weight: 700;
+}
+
+@media (max-width: 899px) {
+    .venta-total {
+        position: fixed;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        z-index: 5;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    }
+
+    .venta-panel.activa {
+        padding-bottom: 5.5rem;
+    }
+}
+
+@media (min-width: 900px) {
+    .venta-tabs {
+        display: none;
+    }
+
+    .venta-encabezado {
+        display: block;
+    }
+
+    .venta-paneles {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.85fr);
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .venta-panel {
+        display: block;
+    }
+
+    .venta-total {
+        position: static;
+    }
+}
+
 @media (max-width: 600px) {
     html {
         font-size: 17px;

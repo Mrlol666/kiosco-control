@@ -3,6 +3,7 @@ from __future__ import annotations
 import sqlite3
 from math import ceil
 
+from app.db import begin_immediate, commit_transaccion, rollback_transaccion
 from app.repositories import productos as productos_repo
 
 TIPOS_VENTA = {"UNIDAD", "PESO"}
@@ -485,6 +486,24 @@ def editar(producto_id: int, datos: dict) -> None:
         productos_repo.actualizar(producto_id, payload)
     except sqlite3.IntegrityError:
         raise ProductoError("No se pudo guardar el producto.") from None
+
+
+def actualizar_precio_venta(producto_id: int, precio) -> None:
+    if productos_repo.obtener_por_id(producto_id) is None:
+        raise ProductoError("El producto no existe.")
+    valor, error = _parsear_no_negativo(precio, "El precio de venta", obligatorio=True)
+    if error:
+        raise ProductoError(error)
+    begin_immediate()
+    try:
+        productos_repo.actualizar_solo_precio_venta(producto_id, valor)
+        commit_transaccion()
+    except ProductoError:
+        rollback_transaccion()
+        raise
+    except Exception:
+        rollback_transaccion()
+        raise ProductoError("No se pudo actualizar el precio de venta.") from None
 
 
 def desactivar(producto_id: int) -> None:

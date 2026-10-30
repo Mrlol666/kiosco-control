@@ -74,6 +74,21 @@ class AjusteForm(FlaskForm):
     submit = SubmitField("Guardar ajuste")
 
 
+class LineaVentaForm(FlaskForm):
+    producto_id = StringField("Producto")
+    cantidad = StringField("Cantidad")
+
+
+class PrecioVentaForm(FlaskForm):
+    producto_id = StringField("Producto")
+    precio = StringField("Precio de venta")
+
+
+class PendienteVentaForm(FlaskForm):
+    etiqueta = StringField("Etiqueta")
+    confirmar = StringField("Confirmar")
+
+
 class DescuentoForm(FlaskForm):
     cantidad = StringField("Cantidad a descontar")
     unidad_entrada = SelectField(

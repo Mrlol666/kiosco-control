@@ -73,8 +73,37 @@ def close_db(exception: BaseException | None = None) -> None:
         connection.close()
 
 
+def ruta_sql_carrito() -> Path:
+    return Path(__file__).resolve().parents[1] / "scripts" / "sql" / "001_carrito.sql"
+
+
+def aplicar_estructura_v03(db_path: Path | str, seed_path: Path | str | None = None) -> None:
+    """Crea las tablas del carrito si faltan. No borra datos ni toca la seed."""
+    destino = _as_path(db_path)
+    if seed_path is not None:
+        assert_operational_db(destino, seed_path)
+    if not destino.is_file():
+        raise FileNotFoundError(f"No se encontró la base operacional: {destino}")
+
+    sql = ruta_sql_carrito().read_text(encoding="utf-8")
+    if "DROP TABLE" in sql.upper():
+        raise RuntimeError("El SQL de v0.3 no puede borrar tablas.")
+
+    conexion = sqlite3.connect(destino)
+    try:
+        conexion.execute("PRAGMA foreign_keys = ON")
+        conexion.executescript(sql)
+    finally:
+        conexion.close()
+
+
 def init_app(app) -> None:
     app.teardown_appcontext(close_db)
+    destino = _as_path(app.config["DATABASE_PATH"])
+    seed = app.config["SEED_DATABASE_PATH"]
+    if not destino.is_file() or _is_seed_path(destino, seed):
+        return
+    aplicar_estructura_v03(destino, seed)
 
 
 def begin_immediate() -> None:

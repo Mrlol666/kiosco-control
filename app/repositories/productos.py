@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sqlite3
+
 from app.db import get_db
 
 COLUMNAS_LISTADO = """
@@ -280,6 +282,20 @@ def actualizar(producto_id: int, datos: dict) -> None:
         ),
     )
     db.commit()
+
+
+def actualizar_solo_precio_venta(producto_id: int, precio: float) -> None:
+    cursor = get_db().execute(
+        """
+        UPDATE productos
+        SET precio_venta_actual = ?,
+            precio_venta_confirmado = 1
+        WHERE producto_id = ?
+        """,
+        (precio, producto_id),
+    )
+    if cursor.rowcount != 1:
+        raise sqlite3.Error("No se pudo actualizar el precio de venta.")
 
 
 def actualizar_activo(producto_id: int, activo: int) -> bool:
