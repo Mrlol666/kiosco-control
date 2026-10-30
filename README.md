@@ -16,7 +16,12 @@ La aplicación busca facilitar la administración de productos, inventario, vent
 
 ## Estado actual
 
-v0.2 — Inventario completada.
+Kiosco Control se encuentra actualmente en desarrollo.
+
+- **Última versión estable:** `v0.2` — Inventario completado.
+- **Versión en revisión:** `v0.3` — Carrito de ventas.
+
+La funcionalidad inicial del carrito ya fue implementada, pero todavía se encuentra en etapa de pruebas y correcciones antes de considerarla una versión estable.
 
 ### v0.1 — completada
 
@@ -43,9 +48,13 @@ Incluye:
 
 La versión v0.1 está marcada en Git con:
 
-v0.1
+`v0.1`
 
 ### v0.2 — Inventario completada
+
+La versión v0.2 está marcada en Git con:
+
+`v0.2`
 
 Incluye:
 
@@ -63,6 +72,15 @@ Incluye:
 - transacciones atómicas;
 - trazabilidad de cada cambio de stock.
 
+
+### v0.3 — Carrito de ventas en revisión
+
+La funcionalidad inicial del carrito ya está implementada, pero aún se encuentra en etapa de revisión y correcciones.
+
+Esta versión busca permitir armar una venta de forma sencilla sin modificar el stock mientras se construye el carrito. La confirmación definitiva de la venta y el descuento transaccional del inventario corresponden a la siguiente etapa del proyecto.
+
+**Importante:** `v0.3` todavía no está etiquetada como versión estable.
+
 ## Productos e Inventario
 
 Productos administra el catálogo y los datos maestros: descripción, precios, forma de venta y stock mínimo.
@@ -75,7 +93,7 @@ Inventario administra las existencias: stock inicial, reposiciones, ajustes por 
 
 - v0.1 — completada
 - v0.2 — completada
-- v0.3 — Carrito
+- v0.3 — Carrito de ventas — en revisión
 - v0.4 — Confirmación de ventas + descuento transaccional de stock
 - v0.5 — Ventas por peso
 - v0.6 — Historial y anulación
@@ -83,6 +101,10 @@ Inventario administra las existencias: stock inicial, reposiciones, ajustes por 
 - v0.8 — Dashboard analítico y PDF
 - v0.9 — estabilización
 - v1.0 — versión final
+
+## Estado de desarrollo
+
+El repositorio se publica durante el desarrollo para conservar el historial del proyecto y mostrar su evolución. Las versiones etiquetadas en Git representan hitos estables; las funcionalidades que todavía están en revisión se mantienen sin tag de versión.
 
 ## Base de datos
 
